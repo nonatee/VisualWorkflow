@@ -1,10 +1,10 @@
-use crate::connector::Connector;
+use crate::{connector::Connector, EGuiApp};
 use egui::{Pos2, Response, Vec2};
-
+#[derive(Clone)]
 pub struct NodeRect {
     position: Pos2,
     size: Vec2,
-    response: Option<Response>,
+    pub response: Option<Response>,
     connecting: bool,
     pub connectors: Vec<Connector>,
 }
@@ -24,16 +24,17 @@ impl NodeRect {
             egui::Sense::click_and_drag(),
         ));
     }
-    fn paint_rect(&self, ui: &mut egui::Ui, response: &egui::Response) {
+    fn paint_rect(&self, ui: &mut egui::Ui) {
         ui.painter().rect(
-            response.rect,
+            self.response.as_ref().unwrap().rect,
             10.0,
             egui::Color32::LIGHT_BLUE,
             egui::Stroke::new(2.0, egui::Color32::BLACK),
             egui::StrokeKind::Middle,
         );
     }
-    fn handle_drag(&mut self, ctx: &egui::Context, response: &egui::Response) {
+    fn handle_drag(&mut self) {
+        let response = self.response.as_ref().unwrap();
         if response.dragged_by(egui::PointerButton::Primary) {
             self.position += response.drag_delta();
             for connector in &mut self.connectors {
@@ -41,8 +42,8 @@ impl NodeRect {
             }
         }
     }
-    fn check_new_connector(&mut self, ctx: &egui::Context, response: &egui::Response) {
-        if response.dragged_by(egui::PointerButton::Secondary) {
+    pub fn check_new_connector(&mut self, ctx: &egui::Context,  rects: &Vec<NodeRect>) {
+        if self.response.as_ref().unwrap().dragged_by(egui::PointerButton::Secondary) {
             if !self.connecting {
                 let mut pos = None;
                 ctx.input(|i| {
@@ -54,20 +55,25 @@ impl NodeRect {
             if self.connecting {
                 let length = self.connectors.len()-1;
                 self.connectors[length].point2 = ctx.input(|i| i.pointer.hover_pos());
-            }
+            }  
             self.connecting = true;
         }
         else {
+            if self.connecting {
+                let length = self.connectors.len()-1;
+                for (index, node_rect) in rects.iter().enumerate() {
+                    if node_rect.response.as_ref().unwrap().rect.contains(ctx.input(|i| i.pointer.hover_pos()).unwrap()) {
+                        self.connectors[length].connected_node = Some(index);
+                        println!("{}", self.connectors[length].connected_node.unwrap());
+                    }
+                }
+            }
             self.connecting = false;
         }
     }
     pub fn update_this(&mut self, ctx: &egui::Context, ui: &mut egui::Ui) {
-        let response = ui.allocate_rect(
-            egui::Rect::from_min_size(self.position, self.size),
-            egui::Sense::click_and_drag(),
-        );
-        self.paint_rect(ui, &response);
-        self.check_new_connector(ctx, &response);
-        self.handle_drag(ctx, &response);
+        self.assign_rect(ui);
+        self.paint_rect(ui);
+        self.handle_drag();
     }
 }

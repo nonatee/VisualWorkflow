@@ -11,13 +11,13 @@ fn main() {
 }
 
 #[derive(Default)]
-struct EGuiApp {
+struct EGuiApp  {
     cursor_pos: Pos2,
     drawing: bool,
     rects: Vec<NodeRect>,
 }
 
-impl EGuiApp {
+impl  EGuiApp  {
     fn new( cc: &eframe::CreationContext<'_>) -> Self {
         let mut app = Self {
             cursor_pos: Pos2::new(400.0, 400.0),
@@ -31,16 +31,18 @@ impl EGuiApp {
         app
     }
 }
-use egui::{accesskit::Node, pos2, Color32, Pos2, Rect, Sense, Stroke, Vec2};
+use egui::{Color32, Pos2, Stroke, Vec2};
 
 use crate::node_rect::NodeRect;
 impl eframe::App for EGuiApp {
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
         
-        
+        let rects_clone = self.rects.clone();
         egui::CentralPanel::default().show(ctx, |ui| {
+            
             for node in &mut self.rects {
                 node.update_this(ctx, ui);
+                node.check_new_connector(ctx, &rects_clone);
                 for connector in &node.connectors {
                     if connector.point2.is_some() {
                         ui.painter().line_segment([connector.point1.unwrap(), connector.point2.unwrap()], Stroke::new(5.0, Color32::RED));
