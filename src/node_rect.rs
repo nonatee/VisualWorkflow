@@ -36,6 +36,9 @@ impl NodeRect {
     fn handle_drag(&mut self, ctx: &egui::Context, response: &egui::Response) {
         if response.dragged_by(egui::PointerButton::Primary) {
             self.position += response.drag_delta();
+            for connector in &mut self.connectors {
+                connector.point1 = Some((response.drag_delta() + connector.point1.unwrap().to_vec2()).to_pos2());
+            }
         }
     }
     fn check_new_connector(&mut self, ctx: &egui::Context, response: &egui::Response) {
@@ -49,9 +52,13 @@ impl NodeRect {
                 self.connectors.push(new_connector.unwrap());
             }
             if self.connecting {
-                self.connectors[0].point2 = ctx.input(|i| i.pointer.hover_pos());
+                let length = self.connectors.len()-1;
+                self.connectors[length].point2 = ctx.input(|i| i.pointer.hover_pos());
             }
             self.connecting = true;
+        }
+        else {
+            self.connecting = false;
         }
     }
     pub fn update_this(&mut self, ctx: &egui::Context, ui: &mut egui::Ui) {

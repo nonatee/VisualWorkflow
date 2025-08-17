@@ -45,12 +45,8 @@ impl eframe::App for EGuiApp {
                     if connector.point2.is_some() {
                         ui.painter().line_segment([connector.point1.unwrap(), connector.point2.unwrap()], Stroke::new(5.0, Color32::RED));
                     }
-                    
                 } 
             }
-            /* 
-            
-            ui.painter().line_segment([self.point1, self.point2], Stroke::new(5.0, Color32::RED));*/
         });
     }
 }
