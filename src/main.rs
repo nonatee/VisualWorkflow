@@ -1,5 +1,6 @@
 mod node_rect;
 mod connector;
+mod start_button;
 
 fn main() {
     let native_options = eframe::NativeOptions::default();
@@ -31,9 +32,9 @@ impl  EGuiApp  {
         app
     }
 }
-use egui::{Color32, Pos2, Stroke, Vec2};
+use egui::{Rect, Color32, Pos2, Stroke, Vec2};
 
-use crate::node_rect::NodeRect;
+use crate::{node_rect::NodeRect, start_button::StartButton};
 impl eframe::App for EGuiApp {
     fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
         
@@ -49,6 +50,9 @@ impl eframe::App for EGuiApp {
                     }
                 } 
             }
+            let mut start_button = StartButton::new("Hello".to_string(), Rect::from_min_size(Pos2::new(100.0,100.0),Vec2::new(100.0, 100.0)));
+            start_button.init_button(ui);
         });
+        
     }
 }
