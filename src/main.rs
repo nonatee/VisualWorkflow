@@ -25,8 +25,8 @@ impl  EGuiApp  {
             buttons: Vec::new(),
         };
         
-        let rect1 = NodeRect::new(Pos2::new(400.0, 400.0),Vec2::new(100.0, 100.0));
-        let rect2 = NodeRect::new(Pos2::new(0.0, 0.0),Vec2::new(100.0, 100.0));
+        let rect1 = NodeRect::new(Pos2::new(400.0, 400.0),Vec2::new(100.0, 100.0), 0);
+        let rect2 = NodeRect::new(Pos2::new(0.0, 0.0),Vec2::new(100.0, 100.0), 1);
         app.rects.push(rect1);
         app.rects.push(rect2);
         let start_button = StartButton::new("Hello".to_string(), Rect::from_min_size(Pos2::new(100.0,100.0),Vec2::new(100.0, 100.0)));
@@ -55,7 +55,7 @@ impl eframe::App for EGuiApp {
             
             for button in &mut self.buttons {
                 button.init_button(ui);
-                button.check_pressed();
+                button.check_pressed(&rects_clone);
             }
 
         });

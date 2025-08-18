@@ -1,4 +1,4 @@
-use crate::{connector::Connector, EGuiApp};
+use crate::{connector::{self, Connector}, EGuiApp};
 use egui::{Pos2, Response, Vec2};
 #[derive(Clone)]
 pub struct NodeRect {
@@ -7,15 +7,17 @@ pub struct NodeRect {
     pub response: Option<Response>,
     connecting: bool,
     pub connectors: Vec<Connector>,
+    pub index: usize,
 }
 impl NodeRect {
-    pub fn new(position: Pos2, size: Vec2) -> Self {
+    pub fn new(position: Pos2, size: Vec2, index:usize) -> Self {
         Self {
             position: position,
             size: size,
             response: None,
             connecting: false,
             connectors: Vec::new(),
+            index: index
         }
     }
     fn assign_rect(&mut self, ui: &mut egui::Ui) {
@@ -69,6 +71,36 @@ impl NodeRect {
                 }
             }
             self.connecting = false;
+        }
+    }
+    pub fn progress_node(&self, mut args: Option<Vec<String>>, rects: &Vec<NodeRect>) {
+        if self.connectors.len() > 0 {
+            if args.is_some() {
+                args.as_mut().unwrap().push("hello from one of the nodes".to_string());
+            }
+            else {
+                args = Some(Vec::new());
+                args.as_mut().unwrap().push("started it!".to_string());
+            }
+            for connector in &self.connectors {
+                if connector.connected_node.is_some() {
+                    if rects[connector.connected_node.unwrap()].index != self.index  {
+                        rects[connector.connected_node.unwrap()].progress_node(args.clone(), rects);
+                    }
+                }
+            }
+        }
+        else {
+            if args.is_some() {
+                args.as_mut().unwrap().push("ending!".to_string());
+            }
+            else {
+                args = Some(Vec::new());
+                args.as_mut().unwrap().push("starting and ending it!".to_string());
+            }
+            for x in args.unwrap() {
+                println!("{}", x);
+            }
         }
     }
     pub fn update_this(&mut self, ctx: &egui::Context, ui: &mut egui::Ui) {

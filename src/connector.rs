@@ -1,6 +1,5 @@
 use egui::Pos2;
 
-use crate::node_rect::NodeRect;
 #[derive(Clone)]
 pub struct Connector {
     pub point1: Option<Pos2>,
