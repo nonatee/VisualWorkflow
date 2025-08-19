@@ -1,6 +1,6 @@
 use egui::{Button, Rect, Response, Ui};
 
-use crate::{button_struct::ButtonStruct, node_rect::NodeRect};
+use crate::{button_struct::ButtonStruct, node_rect::NodeRect, node_trait::NodeTrait};
 pub struct StartButton {
     response: Option<Response>,
     text: String,
@@ -17,7 +17,7 @@ impl StartButton {
     }
 }
 impl ButtonStruct for StartButton {
-    fn check_pressed(&mut self, rects: &Vec<NodeRect>) {
+    fn check_pressed(&self, rects: &Vec<Box<dyn NodeTrait>>) {
         if self.response.as_ref().unwrap().clicked() {
             println!("yes i am pressed");
             rects[0].progress_node(None, rects);

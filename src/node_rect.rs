@@ -1,9 +1,9 @@
-use crate::{connector::{self, Connector}, EGuiApp};
-use egui::{Pos2, Response, Vec2};
+use crate::{connector::{self, Connector}, node_trait::NodeTrait, EGuiApp};
+use egui::{Pos2, Rect, Response, Vec2};
 #[derive(Clone)]
 pub struct NodeRect {
-    position: Pos2,
-    size: Vec2,
+    pub position: Pos2,
+    pub size: Vec2,
     pub response: Option<Response>,
     connecting: bool,
     pub connectors: Vec<Connector>,
@@ -20,13 +20,13 @@ impl NodeRect {
             index: index
         }
     }
-    fn assign_rect(&mut self, ui: &mut egui::Ui) {
+    pub fn assign_rect(&mut self, ui: &mut egui::Ui) {
         self.response = Some(ui.allocate_rect(
             egui::Rect::from_min_size(self.position, self.size),
             egui::Sense::click_and_drag(),
         ));
     }
-    fn paint_rect(&self, ui: &mut egui::Ui) {
+    pub fn paint_rect(&self, ui: &mut egui::Ui) {
         ui.painter().rect(
             self.response.as_ref().unwrap().rect,
             10.0,
@@ -35,7 +35,7 @@ impl NodeRect {
             egui::StrokeKind::Middle,
         );
     }
-    fn handle_drag(&mut self) {
+    pub fn handle_drag(&mut self) {
         let response = self.response.as_ref().unwrap();
         if response.dragged_by(egui::PointerButton::Primary) {
             self.position += response.drag_delta();
@@ -44,7 +44,8 @@ impl NodeRect {
             }
         }
     }
-    pub fn check_new_connector(&mut self, ctx: &egui::Context,  rects: &Vec<NodeRect>) {
+    pub fn check_new_connector(&mut self, ui: &mut egui::Ui,  rects: &Vec<Rect>) {
+        let ctx = ui.ctx();
         if self.response.as_ref().unwrap().dragged_by(egui::PointerButton::Secondary) {
             if !self.connecting {
                 let mut pos = None;
@@ -63,8 +64,8 @@ impl NodeRect {
         else {
             if self.connecting {
                 let length = self.connectors.len()-1;
-                for (index, node_rect) in rects.iter().enumerate() {
-                    if node_rect.response.as_ref().unwrap().rect.contains(ctx.input(|i| i.pointer.hover_pos()).unwrap()) {
+                for (index, rect) in rects.iter().enumerate() {
+                    if rect.contains(ctx.input(|i| i.pointer.hover_pos()).unwrap()) {
                         self.connectors[length].connected_node = Some(index);
                         println!("{}", self.connectors[length].connected_node.unwrap());
                     }
@@ -73,7 +74,7 @@ impl NodeRect {
             self.connecting = false;
         }
     }
-    pub fn progress_node(&self, mut args: Option<Vec<String>>, rects: &Vec<NodeRect>) {
+    pub fn progress_node(&self, mut args: Option<Vec<String>>, rects: &mut Vec<Box<dyn NodeTrait>>) {
         if self.connectors.len() > 0 {
             if args.is_some() {
                 args.as_mut().unwrap().push("hello from one of the nodes".to_string());
@@ -84,7 +85,7 @@ impl NodeRect {
             }
             for connector in &self.connectors {
                 if connector.connected_node.is_some() {
-                    if rects[connector.connected_node.unwrap()].index != self.index  {
+                    if rects[connector.connected_node.unwrap()].get_rect().index != self.index  {
                         rects[connector.connected_node.unwrap()].progress_node(args.clone(), rects);
                     }
                 }
@@ -103,9 +104,10 @@ impl NodeRect {
             }
         }
     }
-    pub fn update_this(&mut self, ctx: &egui::Context, ui: &mut egui::Ui) {
+    pub fn update_this(&mut self, ui: &mut egui::Ui,  rects: &mut Vec<Rect>) {
         self.assign_rect(ui);
         self.paint_rect(ui);
         self.handle_drag();
+        self.check_new_connector(ui, rects);
     }
 }
