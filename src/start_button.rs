@@ -19,7 +19,6 @@ impl StartButton {
 impl ButtonStruct for StartButton {
     fn check_pressed(&self, rects: &Vec<Box<dyn NodeTrait>>) {
         if self.response.as_ref().unwrap().clicked() {
-            println!("yes i am pressed");
             rects[0].progress_node(None, rects);
         }
     }

@@ -8,16 +8,18 @@ pub struct NodeRect {
     connecting: bool,
     pub connectors: Vec<Connector>,
     pub index: usize,
+    color: egui::Color32,
 }
 impl NodeRect {
-    pub fn new(position: Pos2, size: Vec2, index:usize) -> Self {
+    pub fn new(position: Pos2, size: Vec2, index:usize,color :egui::Color32) -> Self {
         Self {
             position: position,
             size: size,
             response: None,
             connecting: false,
             connectors: Vec::new(),
-            index: index
+            index: index,
+            color: color
         }
     }
     pub fn assign_rect(&mut self, ui: &mut egui::Ui) {
@@ -31,7 +33,7 @@ impl NodeRect {
             self.response.as_ref().unwrap().rect,
             10.0,
             egui::Color32::LIGHT_BLUE,
-            egui::Stroke::new(2.0, egui::Color32::BLACK),
+            egui::Stroke::new(2.0, self.color),
             egui::StrokeKind::Middle,
         );
     }
@@ -104,6 +106,7 @@ impl NodeRect {
             }
         }
     }
+    
     pub fn update_this(&mut self, ui: &mut egui::Ui,  rects: &mut Vec<Rect>) {
         self.assign_rect(ui);
         self.paint_rect(ui);
