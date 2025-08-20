@@ -1,16 +1,20 @@
-use crate::{node_rect::NodeRect, node_trait::{self, NodeTrait}};
+use crate::{connector::Connector, node_rect::NodeRect, node_trait::NodeTrait};
 
 pub struct StartNode {
     pub node_rect: NodeRect,
 }
 impl NodeTrait for StartNode {
-    fn progress_node(&self, mut args: Option<Vec<String>>, rects: &Vec<Box<dyn NodeTrait>>) {
+    fn progress_node(&self, mut args: Option<Vec<String>>, rects: &Vec<Box<dyn NodeTrait>>, connectors: &Vec<Connector>) {
         args = Some(Vec::new());
+        let mut self_connectors: Vec<&Connector> = Vec::new();
+            for index in self.node_rect.connectors.clone() {
+                self_connectors.push(&connectors[index]);
+            }
         if self.node_rect.connectors.len() > 0 {
-            for connector in &self.node_rect.connectors {
+            for connector in self_connectors {
                 if connector.connected_node.is_some() {
                     if rects[connector.connected_node.unwrap()].get_rect().index != self.node_rect.index  {
-                        rects[connector.connected_node.unwrap()].progress_node(args.clone(), rects);
+                        rects[connector.connected_node.unwrap()].progress_node(args.clone(), rects,connectors);
                     }
                 }
             }
