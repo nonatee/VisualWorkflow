@@ -19,7 +19,7 @@ impl StartButton {
 impl ButtonStruct for StartButton {
     fn check_pressed(&self, rects: &Vec<Box<dyn NodeTrait>>, connectors: &mut Vec<Connector>) {
         if self.response.as_ref().unwrap().clicked() {
-            rects[0].progress_node(None, rects, connectors);
+            rects[0].progress_node(None, rects, connectors, Vec::new());
         }
     }
     fn init_button(&mut self, ui: &mut Ui) {

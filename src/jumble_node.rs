@@ -8,7 +8,16 @@ pub struct JumbleNode {
     pub node_rect: NodeRect,
 }
 impl NodeTrait for JumbleNode {
-    fn progress_node(&self, mut args: Option<Vec<String>>, rects: &Vec<Box<dyn NodeTrait>>, connectors: &Vec<Connector>) {
+    fn progress_node(&self, mut args: Option<Vec<String>>, rects: &Vec<Box<dyn NodeTrait>>, connectors: &Vec<Connector>, mut participated_nodes: Vec<bool>) {
+        if *participated_nodes.get(self.node_rect.index).unwrap_or(&false) {
+            for x in args.unwrap() {
+                println!("{}", x);
+            }
+            return};
+        if self.node_rect.index >= participated_nodes.len() {
+            participated_nodes.resize(self.node_rect.index + 1, false);
+        }
+                participated_nodes[self.node_rect.index] = true;
         if args.is_some() {
             args = Some(self.jumble_string(args.as_mut().unwrap().to_vec()));
         } else {
@@ -26,7 +35,7 @@ impl NodeTrait for JumbleNode {
                     if rects[connector.connected_node.unwrap()].get_rect().index
                         != self.node_rect.index
                     {
-                        rects[connector.connected_node.unwrap()].progress_node(args.clone(), rects, connectors);
+                        rects[connector.connected_node.unwrap()].progress_node(args.clone(), rects, connectors,participated_nodes.clone());
                     }
                 }
             }

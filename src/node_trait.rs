@@ -3,7 +3,7 @@ use egui::Rect;
 use crate::{connector::Connector, node_rect::NodeRect};
 
 pub trait NodeTrait {
-    fn progress_node(&self, args: Option<Vec<String>>, rects: &Vec<Box<dyn NodeTrait>>, connectors: &Vec<Connector>);
+    fn progress_node(&self, args: Option<Vec<String>>, rects: &Vec<Box<dyn NodeTrait>>, connectors: &Vec<Connector>, participated_nodes: Vec<bool>);
     fn update_this(&mut self, ui: &mut egui::Ui,rects:&Vec<Rect>, connectors: &mut Vec<Connector>) {
         let node_rect = self.get_mut_rect();
         node_rect.assign_rect(ui);

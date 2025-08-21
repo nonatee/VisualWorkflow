@@ -7,7 +7,16 @@ pub struct TextNode {
     pub text: String
 }
 impl NodeTrait for TextNode {
-    fn progress_node(&self, mut args: Option<Vec<String>>, rects: &Vec<Box<dyn NodeTrait>>, connectors: &Vec<Connector>) {
+    fn progress_node(&self, mut args: Option<Vec<String>>, rects: &Vec<Box<dyn NodeTrait>>, connectors: &Vec<Connector>, mut participated_nodes: Vec<bool>) {
+        if *participated_nodes.get(self.node_rect.index).unwrap_or(&false) {
+            for x in args.unwrap() {
+                println!("{}", x);
+            }
+            return};
+        if self.node_rect.index >= participated_nodes.len() {
+            participated_nodes.resize(self.node_rect.index + 1, false);
+        }
+        participated_nodes[self.node_rect.index] = true;
         args.as_mut().unwrap().push(self.text.clone());
         let mut self_connectors: Vec<&Connector> = Vec::new();
             for index in self.node_rect.connectors.clone() {
@@ -18,7 +27,7 @@ impl NodeTrait for TextNode {
             for connector in self_connectors {
                 if connector.connected_node.is_some() {
                     if rects[connector.connected_node.unwrap()].get_rect().index != self.node_rect.index  {
-                        rects[connector.connected_node.unwrap()].progress_node(args.clone(), rects,connectors);
+                        rects[connector.connected_node.unwrap()].progress_node(args.clone(), rects,connectors,participated_nodes.clone());
                     }
                 }
             }

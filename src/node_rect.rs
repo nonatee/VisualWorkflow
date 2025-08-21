@@ -82,7 +82,9 @@ impl NodeRect {
             self.connecting = false;
         }
     }
-    pub fn progress_node(&self, mut args: Option<Vec<String>>, rects: &mut Vec<Box<dyn NodeTrait>>, connectors: &mut Vec<Connector>) {
+    fn progress_node(&self, mut args: Option<Vec<String>>, rects: &Vec<Box<dyn NodeTrait>>, connectors: &Vec<Connector>, mut participated_nodes: Vec<bool>) {
+        if *participated_nodes.get(self.index).unwrap_or(&false) {return};
+        participated_nodes[self.index] = true;
         if self.connectors.len() > 0 {
             if args.is_some() {
                 args.as_mut().unwrap().push("hello from one of the nodes".to_string());
@@ -98,7 +100,7 @@ impl NodeRect {
             for connector in self_connectors {
                 if connector.connected_node.is_some() {
                     if rects[connector.connected_node.unwrap()].get_rect().index != self.index  {
-                        rects[connector.connected_node.unwrap()].progress_node(args.clone(), rects,connectors);
+                        rects[connector.connected_node.unwrap()].progress_node(args.clone(), rects,connectors,participated_nodes.clone());
                     }
                 }
             }
