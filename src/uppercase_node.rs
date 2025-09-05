@@ -1,5 +1,3 @@
-use egui::Rect;
-
 use crate::{
     connector::Connector, node_rect::NodeRect, node_trait::NodeTrait
 };

@@ -1,7 +1,5 @@
-use egui::Rect;
-
 use crate::{
-    connector::Connector, node_rect::NodeRect, node_trait::{self, NodeTrait}
+    connector::Connector, node_rect::NodeRect, node_trait::{NodeTrait}
 };
 
 pub struct JumbleNode {

@@ -1,4 +1,4 @@
-use crate::{connector::{self, Connector}, node_trait::NodeTrait, EGuiApp};
+use crate::{connector::{Connector}, node_trait::NodeTrait};
 use egui::{Pos2, Rect, Response, Vec2};
 #[derive(Clone)]
 pub struct NodeRect {

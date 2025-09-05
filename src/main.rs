@@ -25,7 +25,7 @@ struct EGuiApp {
 }
 
 impl EGuiApp {
-    fn new(cc: &eframe::CreationContext<'_>) -> Self {
+    fn new(_: &eframe::CreationContext<'_>) -> Self {
         let mut app = Self {
             rects: Vec::new(),
             buttons: Vec::new(),
@@ -81,7 +81,7 @@ use crate::{
     button_struct::ButtonStruct, connector::Connector, jumble_node::JumbleNode, node_rect::NodeRect, node_trait::NodeTrait, start_button::StartButton, start_node::StartNode, text_node::TextNode, uppercase_node::UppercaseNode
 };
 impl eframe::App for EGuiApp {
-    fn update(&mut self, ctx: &egui::Context, frame: &mut eframe::Frame) {
+    fn update(&mut self, ctx: &egui::Context, _: &mut eframe::Frame) {
         let mut vec_rects = Vec::new();
         for node in &self.rects {
             vec_rects.push(Rect::from_min_size(

@@ -1,6 +1,6 @@
 use egui::{Button, Rect, Response, Ui};
 
-use crate::{button_struct::ButtonStruct, connector::Connector, node_rect::NodeRect, node_trait::NodeTrait};
+use crate::{button_struct::ButtonStruct, connector::Connector, node_trait::NodeTrait};
 pub struct StartButton {
     response: Option<Response>,
     text: String,
